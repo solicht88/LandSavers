@@ -60,6 +60,7 @@ while is_title_screen:
         break
     pg.display.update()
 
+is_game_instructions = False
 story_text = ["The world is ending!", "You and your friend must restore the", "ecological balance to save the world!","The planter must catch seeds,","and the cleaner must catch trash.","Press Space to continue"]
 
 while is_story_line:
@@ -71,8 +72,6 @@ while is_story_line:
         screen.blit(story_line, (WIDTH/2 - story_rect.width/2, HEIGHT/2 - story_rect.height/2 - 84 + (line * 28)))
 
     pg.display.update()
-
-    pg.time.delay(1000)
     
     for event in pg.event.get():
         if event.type == pg.QUIT:
@@ -81,10 +80,30 @@ while is_story_line:
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_SPACE:
                 is_story_line = False
+                is_game_instructions = True
                 break
-        
-    
 
+instruction_text = ["Catch seeds as the planter.", "Catch trash as the cleaner.", "Lose a heart for catching the wrong item.", "Lose a point for missing an item.", "Press Space to start"]
+
+while is_game_instructions:
+    screen.blit(bg_img, (0, 0))
+
+    for line in range(len(instruction_text)):
+        instruction_line = font.render(instruction_text[line], True, DARK_BLUE)
+        instruction_rect = instruction_line.get_rect()
+        screen.blit(instruction_line, (WIDTH/2 - instruction_rect.width/2, HEIGHT/2 - instruction_rect.height/2 - 84 + (line * 28)))
+
+        pg.display.update()
+    
+    for event in pg.event.get():
+        if event.type == pg.QUIT:
+            pg.quit()
+            break
+        if event.type == pg.KEYDOWN:
+            if event.key == pg.K_SPACE:
+                is_game_instructions = False
+                break
+    
 # create player objects
 player_1 = Player1()
 player_2 = Player2()
@@ -183,12 +202,23 @@ while True:
     screen.blit(score_text, (WIDTH/2 - score_rect.width/2, 0 + score_rect.height))
     screen.blit(lives_text, (8, HEIGHT - lives_rect.height - 8))
     for life in range(lives):
-        screen.blit(heart_img, (0 + lives_rect.width + (40 * life), HEIGHT - 72))
+        screen.blit(heart_img, (8 + lives_rect.width + (40 * life), HEIGHT - 32))
     
     pg.display.update()
 
 while game_over:
+    screen.blit(bg_img, (0, 0))
+    
+    game_over_text = title_font.render("Game Over!", True, DARK_BLUE)
+    game_over_rect = game_over_text.get_rect()
+    screen.blit(game_over_text, (WIDTH/2 - game_over_rect.width/2, HEIGHT/2 - game_over_rect.height/2))
+
+    score_text = font.render("Final Score: " + str(score), True, DARK_BLUE)
+    score_rect = score_text.get_rect()
+    screen.blit(score_text, (WIDTH/2 - score_rect.width/2, HEIGHT/2 - score_rect.height/2 + 48))
+
+    pg.display.update()
     break
 # TODO: update aseprite files
 
-# TODO: ranks, instructions, game over screen, music, README.md
+# TODO: ranks, instructions, game over screen, music, README.md, switching between player sprites
