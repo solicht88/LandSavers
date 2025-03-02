@@ -53,7 +53,7 @@ while is_title_screen:
         if event.type == pg.QUIT:
             pg.quit()
             break
-    key = pg.key.get_pressed() #checks the key pressed
+    key = pg.key.get_pressed()
     if key[pg.K_SPACE]:
         is_title_screen = False
         is_story_line = True
@@ -69,6 +69,8 @@ while is_story_line:
     for line in range(len(story_text)):
         story_line = font.render(story_text[line], True, DARK_BLUE)
         story_rect = story_line.get_rect()
+        if line == 5:
+            line += 1
         screen.blit(story_line, (WIDTH/2 - story_rect.width/2, HEIGHT/2 - story_rect.height/2 - 84 + (line * 28)))
 
     pg.display.update()
@@ -83,7 +85,7 @@ while is_story_line:
                 is_game_instructions = True
                 break
 
-instruction_text = ["Catch seeds as the planter.", "Catch trash as the cleaner.", "Lose a heart for catching the wrong item.", "Lose a point for missing an item.", "Press Space to start"]
+instruction_text = ["Catch seeds as the planter (player 1).", "Catch trash as the cleaner (player 2).", "Lose a heart for catching the wrong item.", "Lose a point for missing an item.", "Press Space to start"]
 
 while is_game_instructions:
     screen.blit(bg_img, (0, 0))
@@ -91,9 +93,11 @@ while is_game_instructions:
     for line in range(len(instruction_text)):
         instruction_line = font.render(instruction_text[line], True, DARK_BLUE)
         instruction_rect = instruction_line.get_rect()
+        if line == 4:
+            line += 1
         screen.blit(instruction_line, (WIDTH/2 - instruction_rect.width/2, HEIGHT/2 - instruction_rect.height/2 - 84 + (line * 28)))
 
-        pg.display.update()
+    pg.display.update()
     
     for event in pg.event.get():
         if event.type == pg.QUIT:
@@ -114,37 +118,69 @@ frames = 150
 obj_speed = 1
 
 game_over = False
+running = True
 
-while True:
+while running:
+    screen.blit(bg_img, (0, 0))
+
+    if game_over:
+        game_over_text = title_font.render("Game Over!", True, DARK_BLUE)
+        game_over_rect = game_over_text.get_rect()
+        screen.blit(game_over_text, (WIDTH/2 - game_over_rect.width/2, HEIGHT/2 - game_over_rect.height/2 - 48))
+
+        score_text = font.render("Final Score: " + str(score), True, DARK_BLUE)
+        score_rect = score_text.get_rect()
+        screen.blit(score_text, (WIDTH/2 - score_rect.width/2, HEIGHT/2 - score_rect.height/2))
+
+        inst_text = font.render("Press SPACE to play again", True, DARK_BLUE)
+        inst_rect = inst_text.get_rect()
+        screen.blit(inst_text, (WIDTH/2 - inst_rect.width/2, HEIGHT/2 - inst_rect.height/2 + 24))
+
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                break
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_SPACE:
+                    game_over = False
+                    running = True
+                    score = 0
+                    lives = 3
+                    player_1.x = 160
+                    player_2.x = 256
+                    items = []
+                    time = 0
+                    obj_speed = 1
+        pg.display.update()
+        continue
+
     if lives == 0:
         game_over = True
-        break
+        continue
 
     for event in pg.event.get():
         if event.type == pg.QUIT: #checks if the user quits the game
             pg.quit() #quits the game
             break
 
-    screen.blit(bg_img, (0, 0))
-
     key = pg.key.get_pressed() #checks the key pressed
 
     if key[pg.K_LEFT]: 
-        player_1.x -= player_1.speed #moves the player 1 to the left
-        if player_1.x <= -12:
-            player_1.x = -12
-    if key[pg.K_RIGHT]: 
-        player_1.x += player_1.speed #moves the player 1 to the right
-        if player_1.x >= WIDTH - 112:
-            player_1.x = WIDTH - 112
-    if key[pg.K_a]:
-        player_2.x -= player_2.speed
+        player_2.x -= player_2.speed #moves the player 1 to the left
         if player_2.x <= -12:
             player_2.x = -12
-    if key[pg.K_d]:
-        player_2.x += player_2.speed 
-        if player_2.x >= WIDTH - 112: 
+    if key[pg.K_RIGHT]: 
+        player_2.x += player_2.speed #moves the player 1 to the right
+        if player_2.x >= WIDTH - 112:
             player_2.x = WIDTH - 112
+    if key[pg.K_a]:
+        player_1.x -= player_1.speed
+        if player_1.x <= -12:
+            player_1.x = -12
+    if key[pg.K_d]:
+        player_1.x += player_1.speed 
+        if player_1.x >= WIDTH - 112: 
+            player_1.x = WIDTH - 112
     
     # drop items
     to_remove = set()
@@ -187,8 +223,8 @@ while True:
     if time % frames == 0:
         items.append(Object(obj_speed))
 
-    # speed up objects after every 6 catches
-    if score % 6 == 0:
+    # speed up objects after score reaches multiple of 5
+    if score % 5 == 0:
         obj_speed += 1
     time += 1
     
@@ -206,19 +242,6 @@ while True:
     
     pg.display.update()
 
-while game_over:
-    screen.blit(bg_img, (0, 0))
-    
-    game_over_text = title_font.render("Game Over!", True, DARK_BLUE)
-    game_over_rect = game_over_text.get_rect()
-    screen.blit(game_over_text, (WIDTH/2 - game_over_rect.width/2, HEIGHT/2 - game_over_rect.height/2))
-
-    score_text = font.render("Final Score: " + str(score), True, DARK_BLUE)
-    score_rect = score_text.get_rect()
-    screen.blit(score_text, (WIDTH/2 - score_rect.width/2, HEIGHT/2 - score_rect.height/2 + 48))
-
-    pg.display.update()
-    break
 # TODO: update aseprite files
 
 # TODO: ranks, instructions, game over screen, music, README.md, switching between player sprites

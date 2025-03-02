@@ -6,7 +6,7 @@ class Player1:
         self.idle_img = pg.transform.scale(pg.image.load('assets/player_1/idle.png'), (96, 144))
         self.catch_img = pg.transform.scale(pg.image.load('assets/player_1/caught.png'), (96, 144))
         self.wrong_img = pg.transform.scale(pg.image.load('assets/player_1/wrong.png'), (96, 144))
-        self.x = 256
+        self.x = 160
         self.y = 240
         self.speed = 1.5
 
