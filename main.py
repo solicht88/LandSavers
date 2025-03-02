@@ -30,7 +30,7 @@ DARK_BLUE = (8, 33, 64) # RGB color
 
 # storing facts + advice
 facts = ["Consumption halved wildlife population in last fifty years.", "14 million tonnes of plastic enter oceans annually.", "300 football fields worth of trees are cut down hourly.", "Deforestry can directly increase infectious disease outbreaks."]
-advice = ["Avoid single use plastics!", "Make sure to dispose of your trash properly; reuse and recycle!", "Opt for responsibly created wood products!", "Planting trees is nature's way of combating climate change."]
+advice = ["Avoid single use plastics!", "Make sure to dispose of your trash properly; reuse and recycle!", "Opt for responsibly created wood products!", "Planting trees is nature's way of combating climate change. 🌳"]
 
 # initialize screen
 screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -298,9 +298,9 @@ while running:
     if time % frames == 0:
         items.append(Object(obj_speed))
 
-    # speed up objects after score reaches positive multiple of 5
-    if score > 0 and score % 5 == 0:
-        obj_speed += 1
+    # speed up objects every 1500 frames if scoer is positive
+    if time % 1500 == 0 and score > 0:
+        obj_speed += 0.25
     time += 1
 
     # display score + lives text
