@@ -4,30 +4,39 @@ from objects import Object
 from players import Player1, Player2
 
 pg.init()
-# TODO: import the images
+# import images
 bg_img = pg.image.load("assets/bg.png")
 heart_img = pg.transform.scale(pg.image.load("assets/heart.png"), (32, 32))
+icon_img = pg.image.load("assets/icon.png")
 
-# TODO: import pixel font
+# import pixel font
 pixelify = "assets/PixelifySans-VariableFont_wght.ttf"
 title_font = pg.font.Font(pixelify, 48)
 font = pg.font.Font(pixelify, 24)
 
+# import and play main theme
+pixel_song = pg.mixer.Sound("assets/pixel_song.mp3")
+pg.mixer.Channel(0).play(pixel_song, -1)
+
+# import sfx
+basket_sfx = pg.mixer.Sound("assets/basket.mp3")
+error_sfx = pg.mixer.Sound("assets/error.mp3")
+
 # constants
 WIDTH=512
 HEIGHT=384
-DARK_BLUE = (31, 71, 120)
+DARK_BLUE = (8, 33, 64) # RGB color
 
 # initialize screen
 screen = pg.display.set_mode((WIDTH, HEIGHT))
 pg.display.set_caption("LandSavers")
-#pg.display.set_icon()
+pg.display.set_icon(icon_img)
 
-# keep track of scores
+# keep track of scores + lives
 score = 0
 lives = 3
 
-# create title text
+# create title screen text
 title_text = title_font.render("LandSavers", True, DARK_BLUE)
 title_rect = title_text.get_rect()
 
@@ -39,20 +48,23 @@ p2_rect = p2_text.get_rect()
 inst_text = font.render("Press SPACE to start", True, DARK_BLUE)
 inst_rect = inst_text.get_rect()
 
+# title screen loop
 is_title_screen = True
 is_story_line = False
 
 while is_title_screen:
+    # blit bg image and text
     screen.blit(bg_img, (0, 0))
     screen.blit(title_text, (WIDTH/2 - title_rect.width/2, HEIGHT/2 - title_rect.height/2 - 56))
     screen.blit(p1_text, (WIDTH/2 - p1_rect.width/2, HEIGHT/2 - p1_rect.height/2 - 20))
     screen.blit(p2_text, (WIDTH/2 - p2_rect.width/2, HEIGHT/2 - p2_rect.height/2+8))
     screen.blit(inst_text, (WIDTH/2 - inst_rect.width/2, HEIGHT/2 - inst_rect.height/2 + 65))
-
+    
     for event in pg.event.get():
         if event.type == pg.QUIT:
             pg.quit()
             break
+    # move on to story line screen if space is pressed
     key = pg.key.get_pressed()
     if key[pg.K_SPACE]:
         is_title_screen = False
@@ -60,15 +72,19 @@ while is_title_screen:
         break
     pg.display.update()
 
+# story line text
 is_game_instructions = False
 story_text = ["The world is ending!", "You and your friend must restore the", "ecological balance to save the world!","The planter must catch seeds,","and the cleaner must catch trash.","Press Space to continue"]
 
+# story line loop
 while is_story_line:
     screen.blit(bg_img, (0, 0))
 
+    # blit each line in story_text
     for line in range(len(story_text)):
         story_line = font.render(story_text[line], True, DARK_BLUE)
         story_rect = story_line.get_rect()
+        # add extra space above last line
         if line == 5:
             line += 1
         screen.blit(story_line, (WIDTH/2 - story_rect.width/2, HEIGHT/2 - story_rect.height/2 - 84 + (line * 28)))
@@ -79,20 +95,24 @@ while is_story_line:
         if event.type == pg.QUIT:
             pg.quit()
             break
+        # move on to game instructions screen if space is pressed
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_SPACE:
                 is_story_line = False
                 is_game_instructions = True
                 break
 
+# game instructions text
 instruction_text = ["Catch seeds as the planter (player 1).", "Catch trash as the cleaner (player 2).", "Lose a heart for catching the wrong item.", "Lose a point for missing an item.", "Press Space to start"]
 
 while is_game_instructions:
     screen.blit(bg_img, (0, 0))
 
+    # blit each line in instruction_text
     for line in range(len(instruction_text)):
         instruction_line = font.render(instruction_text[line], True, DARK_BLUE)
         instruction_rect = instruction_line.get_rect()
+        # add extra space above last line
         if line == 4:
             line += 1
         screen.blit(instruction_line, (WIDTH/2 - instruction_rect.width/2, HEIGHT/2 - instruction_rect.height/2 - 84 + (line * 28)))
@@ -103,6 +123,7 @@ while is_game_instructions:
         if event.type == pg.QUIT:
             pg.quit()
             break
+        # move on to game if space is pressed
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_SPACE:
                 is_game_instructions = False
@@ -112,6 +133,7 @@ while is_game_instructions:
 player_1 = Player1()
 player_2 = Player2()
 
+# keep track of objects + time
 items = []
 time = 0
 frames = 150
@@ -120,10 +142,13 @@ obj_speed = 1
 game_over = False
 running = True
 
+# main game loop
 while running:
     screen.blit(bg_img, (0, 0))
 
+    # game over screen
     if game_over:
+        # display game over text
         game_over_text = title_font.render("Game Over!", True, DARK_BLUE)
         game_over_rect = game_over_text.get_rect()
         screen.blit(game_over_text, (WIDTH/2 - game_over_rect.width/2, HEIGHT/2 - game_over_rect.height/2 - 48))
@@ -140,6 +165,7 @@ while running:
             if event.type == pg.QUIT:
                 pg.quit()
                 break
+            # restart game + related variables if space is pressed
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE:
                     game_over = False
@@ -151,9 +177,12 @@ while running:
                     items = []
                     time = 0
                     obj_speed = 1
+                    for player in [player_1, player_2]:
+                        player.cur_img = player.idle_img
         pg.display.update()
         continue
 
+    # game_over if lives = 0
     if lives == 0:
         game_over = True
         continue
@@ -166,23 +195,23 @@ while running:
     key = pg.key.get_pressed() #checks the key pressed
 
     if key[pg.K_LEFT]: 
-        player_2.x -= player_2.speed #moves the player 1 to the left
+        player_2.x -= player_2.speed #moves the player_2 to the left
         if player_2.x <= -12:
             player_2.x = -12
     if key[pg.K_RIGHT]: 
-        player_2.x += player_2.speed #moves the player 1 to the right
+        player_2.x += player_2.speed #moves the player_2 to the right
         if player_2.x >= WIDTH - 112:
             player_2.x = WIDTH - 112
     if key[pg.K_a]:
-        player_1.x -= player_1.speed
+        player_1.x -= player_1.speed #moves player_1 to the left
         if player_1.x <= -12:
             player_1.x = -12
     if key[pg.K_d]:
-        player_1.x += player_1.speed 
+        player_1.x += player_1.speed #moves player_1 to the right
         if player_1.x >= WIDTH - 112: 
             player_1.x = WIDTH - 112
     
-    # drop items
+    # drop items from above
     to_remove = set()
     for obj in items:
         obj.drop_object(screen)
@@ -193,31 +222,56 @@ while running:
             # check type of collision
             if collision:
                 if obj_type == "seed":
-                    # if seed colldies with planter, add point
+                    # if seed colldies with planter, add point to score
                     if player_type == "planter":
+                        # change player_1 sprite to happy
+                        player_1.cur_img = player_1.catch_img
+                        player_1.sprite_time = 0
+                        pg.mixer.Channel(1).play(basket_sfx)
                         score += 1
                     # otherwise seed collides with cleaner, lose a life
                     else:
+                        # change player_2 sprite to sad
+                        player_2.cur_img = player_2.wrong_img
+                        player_2.sprite_time = 0
+                        pg.mixer.Channel(1).play(error_sfx)
                         lives -= 1
                 elif obj_type == "trash":
-                    # if trash collides with cleaner, add point
+                    # if trash collides with cleaner, add point to score
                     if player_type == "cleaner":
+                        # change player_2 sprite to happy
+                        player_2.cur_img = player_2.catch_img
+                        player_2.sprite_time = 0
+                        pg.mixer.Channel(1).play(basket_sfx)
                         score += 1
                     # otherwise trash collides with planter, lose a life
                     else:
+                        # change player_1 sprite to sad
+                        player_1.cur_img = player_1.wrong_img
+                        player_1.sprite_time = 0
+                        pg.mixer.Channel(1).play(error_sfx)
                         lives -= 1
-                # otherwise object collides with ground, lose a life
+                # otherwise object collides with ground, lose a point from score
                 elif obj_type == "ground":
+                    pg.mixer.Channel(1).play(error_sfx)
                     score -= 1
-                # todo: fix remove
                 to_remove.add(obj)
                 break
+    # remove all objects that have collided
     for obj in to_remove:
         items.remove(obj)
 
+    # update player sprites
+    for player in [player_1, player_2]:
+        player.sprite_time += 1
+        # change sprite back to idle after 75 frames
+        if player.sprite_time == 75:
+            player.sprite_time = 0
+            player.cur_img = player.idle_img
+
     # blit players
-    screen.blit(player_1.idle_img, (player_1.x, player_1.y))
-    screen.blit(player_2.idle_img, (player_2.x, player_2.y))
+    screen.blit(player_1.cur_img, (player_1.x, player_1.y))
+    screen.blit(player_2.cur_img, (player_2.x, player_2.y))
 
     # spawn new object after 
     if time % frames == 0:
@@ -227,9 +281,9 @@ while running:
     if score % 5 == 0:
         obj_speed += 1
     time += 1
-    
+
     # display score + lives text
-    score_text = font.render("Score: " + str(score), True, DARK_BLUE)
+    score_text = font.render("Score: " + str(score) + " / Rank " + str(round((score/20)*100, 1)) + '%', True, DARK_BLUE)
     score_rect = score_text.get_rect()
 
     lives_text = font.render("Lives", True, DARK_BLUE)
@@ -238,10 +292,8 @@ while running:
     screen.blit(score_text, (WIDTH/2 - score_rect.width/2, 0 + score_rect.height))
     screen.blit(lives_text, (8, HEIGHT - lives_rect.height - 8))
     for life in range(lives):
-        screen.blit(heart_img, (8 + lives_rect.width + (40 * life), HEIGHT - 32))
+        screen.blit(heart_img, (16 + lives_rect.width + (40 * life), HEIGHT - 40))
     
     pg.display.update()
 
 # TODO: update aseprite files
-
-# TODO: ranks, instructions, game over screen, music, README.md, switching between player sprites
