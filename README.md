@@ -5,19 +5,24 @@ A random fact and corresponding piece of advice related to sustainability is giv
 Project for Sprouthacks 2025, created by Amy (solicht88) and Sakina (sakikifz).  
 
 ## How to Play  
-You and a friend are facing an ecological crisis and must restore sustainability in the Earth!  
+You and a friend are facing an ecological crisis and must restore sustainability in the Earth! The two of you are responsible for diverting this crisis.  
+As you play through the game, a percentage is displayed to track your progress on creating a more sustainable environment.  
 The first player (the planter) must collect plant seeds, while the second player (the cleaner) collects plastic bottles.  
 Both items will fall from the sky towards the player.  
 
 **3 factors contribute to your score:**  
-1. Catching the the right items will increase your score.  
+1. Catching your matching item will increase your score.  
 2. Catching the other player's items will decrease your score.  
 3. Missing a falling item will take away a life (start with 3).  
-The percent rank is calculated based on the score out of 25.  
+The progress percent is calculated based on the score out of 50.  
 
 The score and lives are shared between the 2 players. Losing all your lives will end the game.  
 Use A/D to move first player, and LEFT/RIGHT ARROW keys to move second player.  
-Try to get the highest rank you can!  
+Try to get the highest score you can!  
+
+## Challenges & What we learned  
+ There were things we had to learn on the spot as we needed them, such as the LiveShare feature on VS Code and how to use audio with pygame.  
+ We found it especially challenging at the beginning of production because our coding styles differ, but we were able to work it out.  
 
 ## Credits  
 All art is original, created in Aseprite.  

@@ -30,7 +30,7 @@ DARK_BLUE = (8, 33, 64) # RGB color
 
 # storing facts + advice
 facts = ["Consumption halved wildlife population in last fifty years.", "14 million tonnes of plastic enter oceans annually.", "300 football fields worth of trees are cut down hourly.", "Deforestry can directly increase infectious disease outbreaks."]
-advice = ["Avoid single use plastics!", "Make sure to dispose of your trash properly; reuse and recycle!", "Opt for responsibly created wood products!", "Planting trees is nature's way of combating climate change. 🌳"]
+advice = ["Avoid single use plastics!", "Make sure to dispose of your trash properly; reuse and recycle!", "Opt for responsibly created wood products!", "Planting trees is nature's way of combating climate change."]
 
 # initialize screen
 screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -108,7 +108,7 @@ while is_story_line:
                 break
 
 # game instructions text
-instruction_text = ["Catch seeds as the planter (player 1).", "Catch bottles as the cleaner (player 2).", "Lose a point for catching the wrong item.", "Lose a life for missing an item.", "Press Space to start"]
+instruction_text = ["Catch seeds as the planter (player 1).", "Catch bottles as the cleaner (player 2).", "Lose a point for catching the wrong item.", "Lose a life for missing an item.", "Score high to end the crisis!", "Press Space to start"]
 
 while is_game_instructions:
     screen.blit(bg_img, (0, 0))
@@ -118,7 +118,7 @@ while is_game_instructions:
         instruction_line = font.render(instruction_text[line], True, DARK_BLUE)
         instruction_rect = instruction_line.get_rect()
         # add extra space above last line
-        if line == 4:
+        if line == 5:
             line += 1
         screen.blit(instruction_line, (WIDTH/2 - instruction_rect.width/2, HEIGHT/2 - instruction_rect.height/2 - 84 + (line * 28)))
 
@@ -159,7 +159,7 @@ while running:
         game_over_rect = game_over_text.get_rect()
         screen.blit(game_over_text, (WIDTH/2 - game_over_rect.width/2, HEIGHT/2 - game_over_rect.height/2 - 72))
 
-        score_text = font.render("Final Score: " + str(score) + " / Rank: " + str(round((score/25)*100, 1)) + '%', True, DARK_BLUE)
+        score_text = font.render("Final Score: " + str(score) + "  |  Crisis " + str(round((score/50)*100, 1)) + '% diverted', True, DARK_BLUE)
         score_rect = score_text.get_rect()
         screen.blit(score_text, (WIDTH/2 - score_rect.width/2, HEIGHT/2 - score_rect.height/2 - 36))
         
@@ -304,7 +304,7 @@ while running:
     time += 1
 
     # display score + lives text
-    score_text = font.render("Score: " + str(score) + " / Rank " + str(round((score/25)*100, 1)) + '%', True, DARK_BLUE)
+    score_text = font.render("Score: " + str(score) + "  |  Progess: " + str(round((score/50)*100, 1)) + '%', True, DARK_BLUE)
     score_rect = score_text.get_rect()
 
     lives_text = font.render("Lives", True, DARK_BLUE)
