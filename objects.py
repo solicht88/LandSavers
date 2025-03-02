@@ -16,8 +16,8 @@ class Object:
 
     def check_collision(self, player):
         # check collison w/ player
-        if self.y + 32 >= player.y and self.y <= player.y + 16:
-            if self.x >= player.x + 16 and self.x <= player.x + 80:
+        if self.y + 28 >= player.y and self.y <= player.y + 144:
+            if self.x >= player.x and self.x <= player.x + 96:
                 # check in main.py if type matches with player
                 return True, self.type
         # check collision with ground

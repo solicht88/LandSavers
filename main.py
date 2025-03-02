@@ -1,5 +1,5 @@
 import pygame as pg
-from random import randint, choice
+from random import randint
 from objects import Object
 from players import Player1, Player2
 
@@ -13,6 +13,7 @@ icon_img = pg.image.load("assets/icon.png")
 pixelify = "assets/PixelifySans-VariableFont_wght.ttf"
 title_font = pg.font.Font(pixelify, 48)
 font = pg.font.Font(pixelify, 24)
+fact_font = pg.font.Font(pixelify, 16)
 
 # import and play main theme
 pixel_song = pg.mixer.Sound("assets/pixel_song.mp3")
@@ -26,6 +27,10 @@ error_sfx = pg.mixer.Sound("assets/error.mp3")
 WIDTH=512
 HEIGHT=384
 DARK_BLUE = (8, 33, 64) # RGB color
+
+# storing facts + advice
+facts = ["Consumption halved wildlife population in last fifty years.", "14 million tonnes of plastic enter oceans annually.", "300 football fields worth of trees are cut down hourly.", "Deforestry can directly increase infectious disease outbreaks."]
+advice = ["Avoid single use plastics!", "Make sure to dispose of your trash properly; reuse and recycle!", "Opt for responsibly created wood products!", "Planting trees is nature's way of combating climate change."]
 
 # initialize screen
 screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -42,7 +47,7 @@ title_rect = title_text.get_rect()
 
 p1_text = font.render("Player 1: Planter, use A/D to move", True, DARK_BLUE)
 p1_rect = p1_text.get_rect()
-p2_text = font.render("Player 2: Cleaner, use LEFT/RIGHTto move", True, DARK_BLUE)
+p2_text = font.render("Player 2: Cleaner, use LEFT/RIGHT to move", True, DARK_BLUE)
 p2_rect = p2_text.get_rect()
 
 inst_text = font.render("Press SPACE to start", True, DARK_BLUE)
@@ -74,7 +79,7 @@ while is_title_screen:
 
 # story line text
 is_game_instructions = False
-story_text = ["The world is ending!", "You and your friend must restore the", "ecological balance to save the world!","The planter must catch seeds,","and the cleaner must catch trash.","Press Space to continue"]
+story_text = ["The world is ending!", "You and your friend must help restore", "sustainability in the world!", "Collect seeds to be planted later", "and catch plastic to clean the land.", "Press Space to continue"]
 
 # story line loop
 while is_story_line:
@@ -103,7 +108,7 @@ while is_story_line:
                 break
 
 # game instructions text
-instruction_text = ["Catch seeds as the planter (player 1).", "Catch trash as the cleaner (player 2).", "Lose a heart for catching the wrong item.", "Lose a point for missing an item.", "Press Space to start"]
+instruction_text = ["Catch seeds as the planter (player 1).", "Catch bottles as the cleaner (player 2).", "Lose a point for catching the wrong item.", "Lose a life for missing an item.", "Press Space to start"]
 
 while is_game_instructions:
     screen.blit(bg_img, (0, 0))
@@ -138,6 +143,7 @@ items = []
 time = 0
 frames = 150
 obj_speed = 1
+fact_int = 0
 
 game_over = False
 running = True
@@ -151,15 +157,28 @@ while running:
         # display game over text
         game_over_text = title_font.render("Game Over!", True, DARK_BLUE)
         game_over_rect = game_over_text.get_rect()
-        screen.blit(game_over_text, (WIDTH/2 - game_over_rect.width/2, HEIGHT/2 - game_over_rect.height/2 - 48))
+        screen.blit(game_over_text, (WIDTH/2 - game_over_rect.width/2, HEIGHT/2 - game_over_rect.height/2 - 72))
 
-        score_text = font.render("Final Score: " + str(score), True, DARK_BLUE)
+        score_text = font.render("Final Score: " + str(score) + " / Rank: " + str(round((score/25)*100, 1)) + '%', True, DARK_BLUE)
         score_rect = score_text.get_rect()
-        screen.blit(score_text, (WIDTH/2 - score_rect.width/2, HEIGHT/2 - score_rect.height/2))
+        screen.blit(score_text, (WIDTH/2 - score_rect.width/2, HEIGHT/2 - score_rect.height/2 - 36))
+        
+        # display fact + advice
+        fact_heading = font.render("Fact & Advice", True, DARK_BLUE) 
+        fact_rect = fact_heading.get_rect()
+        screen.blit(fact_heading, (WIDTH/2 - fact_rect.width/2, HEIGHT/2 - fact_rect.height/2))
+
+        fact_text = fact_font.render(facts[fact_int], True, DARK_BLUE)
+        fact_rect = fact_text.get_rect()
+        screen.blit(fact_text, (WIDTH/2 - fact_rect.width/2, HEIGHT/2 - fact_rect.height/2 + 24))
+
+        advice_text = fact_font.render(advice[fact_int], True, DARK_BLUE)
+        advice_rect = advice_text.get_rect()
+        screen.blit(advice_text, (WIDTH/2 - advice_rect.width/2, HEIGHT/2 - advice_rect.height/2 + 40))
 
         inst_text = font.render("Press SPACE to play again", True, DARK_BLUE)
         inst_rect = inst_text.get_rect()
-        screen.blit(inst_text, (WIDTH/2 - inst_rect.width/2, HEIGHT/2 - inst_rect.height/2 + 24))
+        screen.blit(inst_text, (WIDTH/2 - inst_rect.width/2, HEIGHT/2 - inst_rect.height/2 + 72))
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -177,6 +196,7 @@ while running:
                     items = []
                     time = 0
                     obj_speed = 1
+                    fact_int = 0
                     for player in [player_1, player_2]:
                         player.cur_img = player.idle_img
         pg.display.update()
@@ -185,6 +205,7 @@ while running:
     # game_over if lives = 0
     if lives == 0:
         game_over = True
+        fact_int = randint(0, 3)
         continue
 
     for event in pg.event.get():
@@ -235,7 +256,7 @@ while running:
                         player_2.cur_img = player_2.wrong_img
                         player_2.sprite_time = 0
                         pg.mixer.Channel(1).play(error_sfx)
-                        lives -= 1
+                        score -= 1
                 elif obj_type == "trash":
                     # if trash collides with cleaner, add point to score
                     if player_type == "cleaner":
@@ -250,11 +271,11 @@ while running:
                         player_1.cur_img = player_1.wrong_img
                         player_1.sprite_time = 0
                         pg.mixer.Channel(1).play(error_sfx)
-                        lives -= 1
+                        score -= 1
                 # otherwise object collides with ground, lose a point from score
                 elif obj_type == "ground":
                     pg.mixer.Channel(1).play(error_sfx)
-                    score -= 1
+                    lives -= 1
                 to_remove.add(obj)
                 break
     # remove all objects that have collided
@@ -277,13 +298,13 @@ while running:
     if time % frames == 0:
         items.append(Object(obj_speed))
 
-    # speed up objects after score reaches multiple of 5
-    if score % 5 == 0:
+    # speed up objects after score reaches positive multiple of 5
+    if score > 0 and score % 5 == 0:
         obj_speed += 1
     time += 1
 
     # display score + lives text
-    score_text = font.render("Score: " + str(score) + " / Rank " + str(round((score/20)*100, 1)) + '%', True, DARK_BLUE)
+    score_text = font.render("Score: " + str(score) + " / Rank " + str(round((score/25)*100, 1)) + '%', True, DARK_BLUE)
     score_rect = score_text.get_rect()
 
     lives_text = font.render("Lives", True, DARK_BLUE)
@@ -295,5 +316,3 @@ while running:
         screen.blit(heart_img, (16 + lives_rect.width + (40 * life), HEIGHT - 40))
     
     pg.display.update()
-
-# TODO: update aseprite files

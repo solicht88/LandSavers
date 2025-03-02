@@ -9,7 +9,7 @@ class Player1:
         self.cur_img = self.idle_img
         self.x = 160
         self.y = 240
-        self.speed = 1.5
+        self.speed = 1.25
         self.sprite_time = 0
 
 class Player2:
@@ -21,5 +21,5 @@ class Player2:
         self.cur_img = self.idle_img
         self.x = 256
         self.y = 240
-        self.speed = 1.5
+        self.speed = 1.25
         self.sprite_time = 0
