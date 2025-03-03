@@ -21,7 +21,7 @@ Use A/D to move first player, and LEFT/RIGHT ARROW keys to move second player.
 Try to get the highest score you can!  
 
 ## Challenges & What we learned  
- There were things we had to learn on the spot as we needed them, such as the LiveShare feature on VS Code and how to use audio with pygame.  
+ There were things we had to learn on the spot as we needed them, such as the LiveShare feature on VS Code and how to use various elements in pygame.  
  We found it especially challenging at the beginning of production because our coding styles differ, but we were able to work it out.  
 
 ## Credits  
